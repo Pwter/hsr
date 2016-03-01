@@ -1,0 +1,9 @@
+{
+  "name": "hsr",
+  "version": "0.0.1",
+  "dependencies": {
+    "hearthstone-log-watcher": "^3.0.1"
+  },
+  "main": "hsr.js",
+  "description": "Hearthstone replay"
+}
