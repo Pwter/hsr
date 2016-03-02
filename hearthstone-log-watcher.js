@@ -150,8 +150,8 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
       }
 
       // end turn
-      var substrEndTurn = '[Power] GameState.DebugPrintOptions() -   option 0 type=END_TURN mainEntity=';
-      if (line === substrEndTurn) {
+      var substrEndTurn = '[Power] GameState.DebugPrintPower() -     TAG_CHANGE Entity=GameEntity tag=TURN value=';
+      if (line.indexOf(substrEndTurn) !== -1) {
           self.emit('end-turn', data);
       }
       // game finished
