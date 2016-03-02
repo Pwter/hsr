@@ -53,11 +53,12 @@ HSR.prototype.addAction = function(action) {
 }
 
 HSR.prototype.isNewCard = function(entityId) {
+    var newCard = true;
     this.data.cards.forEach(function(card) {
-        if (card !== undefined || card.entityId === entityId)
-            return false;
+        if (parseInt(card.entityId) === parseInt(entityId))
+            newCard = false;
     })
-    return true;
+    return newCard;
 }
 
 HSR.prototype.addCard = function(entityId, cardId) {
@@ -172,7 +173,6 @@ lw.on('zone-change', function(data) {
 
     if (data.toZone==="PLAY (Hero)") {
         hsr.setHero(data.cardName, data.playerId);
-        hsr.addAction({"transition": data.cardName + ";"+data.fromZone+";"+data.toZone});
         console.log("  " + data.cardName + " is played by player" + data.playerId);
     }
     else if (data.toZone==="PLAY (Hero Power)") {
@@ -180,8 +180,9 @@ lw.on('zone-change', function(data) {
     }
     else {
         console.log('  %s moved from %s %s to %s %s. (eID: %s)', data.cardName, data.fromTeam, data.fromZone, data.toTeam, data.toZone, data.entityId);
-        hsr.addAction({"transition": data.entityId + ";"+data.toTeam+";"+data.toZone});
     }
+
+    hsr.addAction({"action": "transition;"+data.entityId + ";"+data.toTeam+";"+data.toZone});
 });
 
 lw.on('set-board', function(board) {
