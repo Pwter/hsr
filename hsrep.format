@@ -1,4 +1,8 @@
 {
+    "meta":
+    {
+    
+    }
     "players": [
         {
             "name": "player1",
@@ -18,20 +22,12 @@
     "cards": [
         {
             "name": "Totem Golem",
-            "attack": 3,
-            "cost": 2,
             "id": "AT_052",
-            "health": 4,
-            "type": "MINION",
             "entityId": 67
         },
         {
             "name": "Leper Gnome",
-            "attack": 2,
-            "cost": 1,
             "id": "EX1_029",
-            "health": 1,
-            "type": "MINION",
             "entityId": 68
         }
 

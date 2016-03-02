@@ -154,6 +154,16 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
       if (line.indexOf(substrEndTurn) !== -1) {
           self.emit('end-turn', data);
       }
+
+      // game board
+      var gameBoardRegex = /\[LoadingScreen\] LoadingScreen.DisableTransitionUnfriendlyStuff\(\) - (.*)\(Clone\) \(UnityEngine.GameObject\)/;
+      if (gameBoardRegex.test(line)) {
+          var board = gameBoardRegex.exec(line);
+          var gameEngines = ["TheBox", "BoardCameras","BoardStandardGame"];
+          if (gameEngines.indexOf(board[1]) === -1)
+              self.emit('set-board', board[1]);
+      }
+
       // game finished
       var resultRegex = /\[Power\] GameState.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=PLAYSTATE value=(LOST|WON)/;
       if (resultRegex.test(line)) {

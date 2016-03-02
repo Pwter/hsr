@@ -7,7 +7,12 @@ var lw = new LogWatcher();
 //lw.on('game-over', console.log.bind(console, 'game-over:'));
 
 function HSR() {
-    this.data = { players: [ { "id": 1 }, { "id": 2 } ], turns: [] };
+    this.data = {
+        meta: {},
+        players: [ { "id": 1 }, { "id": 2 } ],
+        cards: [],
+        turns: []
+    };
     this.actions = [];
     this.currTurn = 0;
 
@@ -31,18 +36,8 @@ HSR.prototype.setHero = function(hero, id) {
         this.data.players[1].hero = hero;
 }
 
-HSR.prototype.setFirst = function(player) {
-    /*
-    this.data.players[0].isFirst = true;
-    */
-}
-
-HSR.prototype.setFriendly = function(player) {
-    /*if (this.data.players[0].name===player)
-        this.data.players[0].isFriendly = true;
-    else
-        this.data.players[1].isFriendly = true;
-        */
+HSR.prototype.setBoard = function(board) {
+    this.data.meta.board = board;
 }
 
 HSR.prototype.getNameFromId = function(id) {
@@ -54,6 +49,21 @@ HSR.prototype.getNameFromId = function(id) {
 
 HSR.prototype.addAction = function(action) {
     this.actions.push(action);
+}
+
+HSR.prototype.isNewCard = function(entityId) {
+    var newCard = true;
+    this.data.cards.forEach(function(card) {
+        if (card.entityId === entityId)
+            newCard=false;
+    })
+    return newCard;
+}
+
+HSR.prototype.addCard = function(entityId, cardId) {
+    if (this.isNewCard(entityId)) {
+        this.data.cards.push({ entityId, cardId });
+    }
 }
 
 HSR.prototype.endTurn = function() {
@@ -107,7 +117,11 @@ HSR.prototype.print = function() {
 }
 
 HSR.prototype.reset = function() {
-    this.data = { players: [ { "id": 1 }, { "id": 2 } ], turns: [] };
+    this.data = {
+        players: [ { "id": 1 }, { "id": 2 } ],
+        cards: [],
+        turns: []
+    };
 }
 
 var hsr = new HSR();
@@ -120,12 +134,9 @@ lw.on('player-join', function(data) {
 
 lw.on('going-first', function(player) {
     console.log(player + ' is going first.');
-    //hsr.setFirst(player);
-
 });
 
 lw.on('playing-as', function(player) {
-    hsr.setFriendly(player);
     console.log('Playing as: ' + player + '.');
 });
 
@@ -144,10 +155,12 @@ lw.on('end-turn', function() {
 });
 
 lw.on('zone-change', function(data) {
+    hsr.addCard(data.entityId, data.cardId);
+
     if (data.toZone==="PLAY (Hero)") {
         hsr.setHero(data.cardName, data.playerId);
         hsr.addAction({"transition": data.cardName + ";"+data.fromZone+";"+data.toZone});
-        console.log(data.cardName + " is played by player" + data.playerId);
+        console.log(" " + data.cardName + " is played by player" + data.playerId);
     }
     else if (data.toZone==="PLAY (Hero Power)") {
         console.log("  " + data.cardName + " is the Hero Power for player" + data.playerId);
@@ -157,6 +170,12 @@ lw.on('zone-change', function(data) {
     //console.log('  ' + hsr.getNameFromId(data.cardId) + '\'s ' + data.cardName +' goes from ' + data.cardName + ' ('+ data.cardId +')');
     console.log('  %s moved from %s %s to %s %s.', data.cardName, data.fromTeam, data.fromZone, data.toTeam, data.toZone);
     }
+});
+
+lw.on('set-board', function(board) {
+    hsr.setBoard(board);
+    console.log("Playing on board: " + board);
+
 });
 
 lw.on('concede', function(player) {
