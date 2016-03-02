@@ -1,4 +1,5 @@
 var LogWatcher = require('./hearthstone-log-watcher');
+var cardsDB = require('./cards.json');
 var fs = require('fs');
 
 var lw = new LogWatcher();
@@ -52,18 +53,29 @@ HSR.prototype.addAction = function(action) {
 }
 
 HSR.prototype.isNewCard = function(entityId) {
-    var newCard = true;
     this.data.cards.forEach(function(card) {
-        if (card.entityId === entityId)
-            newCard=false;
+        if (card !== undefined || card.entityId === entityId)
+            return false;
     })
-    return newCard;
+    return true;
 }
 
 HSR.prototype.addCard = function(entityId, cardId) {
+    var cardData;
     if (this.isNewCard(entityId)) {
-        this.data.cards.push({ entityId, cardId });
+        cardsDB.forEach(function(newCard){
+            if (newCard.id === cardId) {
+                cardData = {
+                    entityId: entityId,
+                    cardId: cardId,
+                    name: newCard.name,
+                    image: newCard.image
+                };
+
+            }
+        });
     }
+    this.data.cards.push(cardData);
 }
 
 HSR.prototype.endTurn = function() {
@@ -118,6 +130,7 @@ HSR.prototype.print = function() {
 
 HSR.prototype.reset = function() {
     this.data = {
+        meta: {},
         players: [ { "id": 1 }, { "id": 2 } ],
         cards: [],
         turns: []
@@ -160,15 +173,14 @@ lw.on('zone-change', function(data) {
     if (data.toZone==="PLAY (Hero)") {
         hsr.setHero(data.cardName, data.playerId);
         hsr.addAction({"transition": data.cardName + ";"+data.fromZone+";"+data.toZone});
-        console.log(" " + data.cardName + " is played by player" + data.playerId);
+        console.log("  " + data.cardName + " is played by player" + data.playerId);
     }
     else if (data.toZone==="PLAY (Hero Power)") {
         console.log("  " + data.cardName + " is the Hero Power for player" + data.playerId);
     }
     else {
-    hsr.addAction({"transition": data.cardName + ";"+data.fromZone+";"+data.toZone});
-    //console.log('  ' + hsr.getNameFromId(data.cardId) + '\'s ' + data.cardName +' goes from ' + data.cardName + ' ('+ data.cardId +')');
-    console.log('  %s moved from %s %s to %s %s.', data.cardName, data.fromTeam, data.fromZone, data.toTeam, data.toZone);
+        console.log('  %s moved from %s %s to %s %s. (eID: %s)', data.cardName, data.fromTeam, data.fromZone, data.toTeam, data.toZone, data.entityId);
+        hsr.addAction({"transition": data.entityId + ";"+data.toTeam+";"+data.toZone});
     }
 });
 

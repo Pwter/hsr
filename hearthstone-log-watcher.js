@@ -1,3 +1,7 @@
+/* modified version of
+// https://github.com/hearthpal/hearthstone-log-watcher
+*/
+
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var fs = require('fs');
