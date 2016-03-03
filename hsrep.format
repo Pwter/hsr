@@ -1,7 +1,7 @@
 {
     "meta":
     {
-    
+
     }
     "players": [
         {
@@ -35,23 +35,23 @@
     "turns": [
         {
             "0": [
-                { "transition": "card1,player1,deck,hand" },
-                { "transition": "card2,player1,deck,hand" },
-                { "transition": "card3,player1,deck,hand" },
-                { "transition": "card4,player2,deck,hand" },
-                { "transition": "card5,player2,deck,hand" },
-                { "transition": "card6,player2,deck,hand" },
-                { "transition": "card7,player2,deck,hand" },
-                { "transition": "card1,player1,hand,deck" },
-                { "transition": "card8,player1,deck,hand" },
-                { "transition": "coin,player2,deck,hand" },
-                { "game": "endturn" }
+                { "action": "transition;card1,player1,deck,hand" },
+                { "action": "transition;card2,player1,deck,hand" },
+                { "action": "transition;card3,player1,deck,hand" },
+                { "action": "transition;card4,player2,deck,hand" },
+                { "action": "transition;card5,player2,deck,hand" },
+                { "action": "transition;card6,player2,deck,hand" },
+                { "action": "transition;card7,player2,deck,hand" },
+                { "action": "transition;card1,player1,hand,deck" },
+                { "action": "transition;card8,player1,deck,hand" },
+                { "action": "transition;coin,player2,deck,hand" },
+                { "action": "game;endturn" }
             ],
             "1" : [
-                { "transition": "card9,player1,deck,hand" },
-                { "transition": "card9,player1,hand,play" },
-                { "action": "card9,player1,attack,player2" },
-                { "game": "endturn" }
+                { "action": "transition;card9,player1,deck,hand" },
+                { "transition": "transition;card9,player1,hand,play" },
+                { "action": "transition;card9,player1,attack,player2" },
+                { "action": "game;endturn" }
             ]
         }
     ]

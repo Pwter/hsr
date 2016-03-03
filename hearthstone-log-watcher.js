@@ -113,7 +113,19 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
         };
 
         self.emit('zone-change', data);
-    }
+      }
+
+      // unknown cards drawn by enemy
+      var enemyDrawsRegex = /\[Power\] GameState.DebugPrintPower\(\) -     TAG_CHANGE Entity=\[id=(.*) cardId= type=INVALID zone=DECK zonePos=0 player=(.*)\] tag=ZONE value=HAND/;
+      if (enemyDrawsRegex.test(line)) {
+          var parts = enemyDrawsRegex.exec(line);
+          var data = {
+              id: parts[1],
+              enemy: parts[2]
+          }
+          self.emit('enemy-draws', data);
+      }
+
       // player joins
       //var playerNameRegex = /\[Power\] GameState.DebugPrintPower\(\) -     FULL_ENTITY - Updating \[name=(.*) id=(.*) zone=(.*) zonePos=0 cardId=(.*) player=(.*)\] CardID/;
       var playerNameRegex = /\[Power\] GameState.DebugPrintEntityChoices\(\) - id=(.) Player=(.*) TaskList=(.*) ChoiceType=MULLIGAN CountMin=0 CountMax=(.)/;
@@ -136,7 +148,7 @@ LogWatcher.prototype.parseBuffer = function (buffer, parserState) {
       }
 
       // set friendly
-      var whoIsFriendlyRegex = /\[Power\] GameState.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=HERO_ENTITY value=66/;
+      var whoIsFriendlyRegex = /\[Power\] GameState.DebugPrintPower\(\) - TAG_CHANGE Entity=(.*) tag=TEAM_ID value=1/;
       if (whoIsFriendlyRegex.test(line)) {
           var player = whoIsFriendlyRegex.exec(line);
           self.emit('playing-as', player[1]);
